@@ -3,7 +3,7 @@ package com.ayush.four
 import akka.actor.{ActorSystem, Props}
 
 object Main extends App {
-  val actorSystem = ActorSystem("Monitoring")
+  val actorSystem = ActorSystem("Supervision")
 
   val parent = actorSystem.actorOf(Props(classOf[Parent]),"parent")
 

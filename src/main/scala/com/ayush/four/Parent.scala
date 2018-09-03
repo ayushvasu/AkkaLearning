@@ -21,7 +21,7 @@ class Parent extends Actor {
 
 
   override def preStart() = {
-    childRef = context.actorOf(Props[Child], "Aphrodite")
+    childRef = context.actorOf(Props[Child], "child")
     Thread.sleep(100)
   }
 

@@ -50,16 +50,16 @@ class CoffeeMachine extends FSM[MachineState, MachineData] {
   startWith(Open, MachineData(currentTxTotal = 0, costOfCoffee =  5, coffeesLeft = 10))
 
   when(Open) {
-    case Event(_,MachineData(_,_,coffeesLeft)) if (coffeesLeft<=0) =>{
+    case Event(_,MachineData(_,_,coffeesLeft)) if coffeesLeft<=0 =>
       logger.warn("No more coffee")
       sender ! MachineError("No more coffee")
       goto(PoweredOff)
-    }
-    case Event(Deposit(value), MachineData(currentTxTotal, costOfCoffee, coffeesLeft)) if (value + currentTxTotal) >= stateData.costOfCoffee =>
+
+    case Event(Deposit(value), MachineData(currentTxTotal, _, _)) if (value + currentTxTotal) >= stateData.costOfCoffee =>
       goto(ReadyToBuy) using stateData.copy(currentTxTotal = currentTxTotal + value)
 
     //If the total deposit is less than than the price of the coffee, then stay in the current state with the current deposit amount incremented.
-    case Event(Deposit(value), MachineData(currentTxTotal, costOfCoffee, coffeesLeft)) if (value + currentTxTotal) < stateData.costOfCoffee =>
+    case Event(Deposit(value), MachineData(currentTxTotal, _, _)) if (value + currentTxTotal) < stateData.costOfCoffee =>
       val cumulativeValue = currentTxTotal + value
       logger.debug(s"staying at open with currentTxTotal $cumulativeValue")
       stay using stateData.copy(currentTxTotal = cumulativeValue)
