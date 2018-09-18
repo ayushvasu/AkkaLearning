@@ -34,6 +34,7 @@ class Counter extends PersistentActor with ActorLogging {
     case evt:Evt =>
       println(s"counter receive $evt on recovering mood")
       updateState(evt)
+      takeSnapshot
     case SnapshotOffer(_, snapshot: State) =>
       println(s"counter receive snap shot with data $snapshot on recovering mood")
       state = snapshot
@@ -47,8 +48,19 @@ class Counter extends PersistentActor with ActorLogging {
         evt =>
           updateState(evt)
       }
+    case SaveSnapshotSuccess(metadata) =>
+      println(s"save snapshot success")
+
+    case SaveSnapshotFailure(metadata, reason) =>
+      println(s"failure while saving snap shot $reason ::: $metadata")
     case "print" =>
       println(s"The Current state of counter is ${state}")
+  }
+
+  def takeSnapshot = {
+    //println(s"called with $state")
+    if(state.count % 5 == 0)
+      saveSnapshot(state)
   }
 
   //persistent identifier
